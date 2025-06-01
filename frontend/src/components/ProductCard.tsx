@@ -2,14 +2,20 @@ import { Button, Card, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useColorMode } from "./ui/color-mode";
 import type { IProduct } from "@/interface";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/app/features/cartSlice";
 
 interface IProps {
   product: IProduct;
 }
 
 const ProductCard = ({ product }: IProps) => {
-  const { title, description, thumbnail, price } = product;
+  const { title, description, thumbnail, price,slug } = product;
   const { colorMode } = useColorMode();
+  const dispatch = useDispatch()
+  const addToCartHandler = (product: IProduct) => {
+    dispatch(addToCart(product));
+  };
 
   return (
     <Card.Root overflow="hidden" border={"1px solid #a8b5c8"} bg={"none"} _hover={{ shadow: "md" }} borderRadius="lg" boxShadow="base">
@@ -25,9 +31,12 @@ const ProductCard = ({ product }: IProps) => {
           ${price}
         </Text>
       </Card.Body>
-      <Card.Footer gap="2">
+      <Card.Footer flexDir={"column"}>
+        <Button onClick={() => addToCartHandler(product)} variant="outline" bg={colorMode === "dark" ? "#9f7aea" : "#e6f3fd"} color={colorMode === "dark" ? "#e6f3fd" : "#9f7aea"} size={"xl"} border={"none"} py={5} overflow={"hidden"} w={"full"} mt={6} _hover={{ bg: colorMode === "dark" ? "#e6f3fd" : "#9f7aea", color: colorMode === "dark" ? "#9f7aea" : "white", border: "transparent" }}>
+          Add to cart
+        </Button>
         <Button asChild variant="outline" bg={colorMode === "dark" ? "#9f7aea" : "#e6f3fd"} color={colorMode === "dark" ? "#e6f3fd" : "#9f7aea"} size={"xl"} border={"none"} py={5} overflow={"hidden"} w={"full"} mt={6} _hover={{ bg: colorMode === "dark" ? "#e6f3fd" : "#9f7aea", color: colorMode === "dark" ? "#9f7aea" : "white", border: "transparent" }}>
-          <Link to={`/product/${encodeURIComponent(title)}`}>View Details</Link>
+          <Link to={`/product/${slug}`}>View Details</Link>
         </Button>
       </Card.Footer>
     </Card.Root>

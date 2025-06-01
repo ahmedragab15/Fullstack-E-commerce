@@ -40,6 +40,10 @@
       "relation": "manyToOne",
       "target": "api::category.category",
       "inversedBy": "products"
+    },
+    "slug": {
+      "type": "string",
+      "unique": true
     }
   }
 }
