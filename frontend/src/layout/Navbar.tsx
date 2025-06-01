@@ -4,15 +4,11 @@ import { CgMoon, CgSun } from "react-icons/cg";
 import { useColorMode, useColorModeValue } from "../components/ui/color-mode";
 import type { ReactNode } from "react";
 import CookieService from "@/services/CookieService";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { openDrawer } from "@/app/features/globalSlice";
 import { selectCart } from "@/app/features/cartSlice";
 
-interface Props {
-  to: string;
-  children: ReactNode;
-}
-
-const NavItem = ({ children, to }: Props) => {
+const NavItem = ({ children, to }: { to: string; children: ReactNode }) => {
   return (
     <Box
       asChild
@@ -32,12 +28,14 @@ const NavItem = ({ children, to }: Props) => {
 const Navbar = () => {
   const token = CookieService.get("jwt");
   const userName = CookieService.get("username");
-  const {cartItems} = useSelector(selectCart);
   const onLogout = ()=>{
     CookieService.remove("jwt")
     location.reload()
   }
   const { colorMode, toggleColorMode } = useColorMode();
+  const dispatch = useDispatch();
+  const {cartItems} = useSelector(selectCart)
+
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
@@ -57,9 +55,10 @@ const Navbar = () => {
                 {colorMode === "light" ? <CgMoon /> : <CgSun />}
               </Button>
               <Menu.Root>
-                <Button bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }}>
-                  Cart ({cartItems?.length})
+                <Button onClick={() => dispatch(openDrawer())} bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }}>
+                  Cart ({cartItems.length})
                 </Button>
+
                 {token ? (
                   <>
                     <Menu.Trigger asChild>
@@ -70,6 +69,7 @@ const Navbar = () => {
                         </Avatar.Root>
                       </Button>
                     </Menu.Trigger>
+                    
                     <Portal>
                       <Menu.Positioner>
                         <Menu.Content w={200} py={5}>

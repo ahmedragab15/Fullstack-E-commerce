@@ -13,11 +13,11 @@ const ProductDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { colorMode } = useColorMode();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const getProduct = async () => {
     try {
-      const { data } = await axiosInstance.get(`/products/?populate=category&populate=thumbnail&fields=title,price,description&filters[slug][$eq]=${slug!}`);
+      const { data } = await axiosInstance.get(`/products/?populate=category&populate=thumbnail&fields=title,price,description,documentId&filters[slug][$eq]=${slug!}`);
       return data;
     } catch (error) {
       console.log(error);
@@ -31,15 +31,14 @@ const ProductDetails = () => {
   });
 
   const goBack = () => navigate(-1);
-  const addToCartHandler = (product: IProduct) => {
-    dispatch(addToCart(product));
+
+  const addToCartHandler = () => {
+    dispatch(addToCart(data?.data[0]));
   };
 
-  if (!slug) return <Navigate to="/not-found" />;  //todo not found page
+  if (!slug) return <Navigate to="/not-found" />; //todo not found page
   if (isLoading) return <ProductDetailsSkeleton />;
-  if (error) return <h3>{error?.message}</h3>;  //todo error message component
-
-
+  if (error) return <h3>{error?.message}</h3>; //todo error message component
 
   return (
     <>
@@ -66,7 +65,7 @@ const ProductDetails = () => {
               </Card.Body>
 
               <Card.Footer>
-                <Button variant="solid" onClick={() => {addToCartHandler(data?.data)}} bg={colorMode === "dark" ? "#9f7aea" : "#e6f3fd"} color={colorMode === "dark" ? "#e6f3fd" : "#9f7aea"} size={"lg"} textTransform={"uppercase"} p={8} border={"none"} py={5} overflow={"hidden"} w={"full"} mt={6} _hover={{ bg: colorMode === "dark" ? "#e6f3fd" : "#9f7aea", color: colorMode === "dark" ? "#9f7aea" : "white", border: "transparent" }}>
+                <Button variant="solid" onClick={addToCartHandler} bg={colorMode === "dark" ? "#9f7aea" : "#e6f3fd"} color={colorMode === "dark" ? "#e6f3fd" : "#9f7aea"} size={"lg"} textTransform={"uppercase"} p={8} border={"none"} py={5} overflow={"hidden"} w={"full"} mt={6} _hover={{ bg: colorMode === "dark" ? "#e6f3fd" : "#9f7aea", color: colorMode === "dark" ? "#9f7aea" : "white", border: "transparent" }}>
                   Add to cart
                 </Button>
               </Card.Footer>
