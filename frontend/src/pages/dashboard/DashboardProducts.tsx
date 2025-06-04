@@ -25,7 +25,6 @@ const DashboardProductsTable = () => {
     const { isOnline } = useSelector(selectNetwork);
   // const hasSelection = selection.length > 0;
   // const indeterminate = hasSelection && selection.length < data?.data.length;
-console.log(isOnline);
 
   //* Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -116,7 +115,7 @@ console.log(isOnline);
             </Button>
           </FileUpload.Trigger>
           <FileUpload.List showSize clearable />
-          {productToEdit?.thumbnail && <Image src={`${import.meta.env.VITE_IMG_URL}${productToEdit.thumbnail.formats?.thumbnail?.url}`} alt="Current thumbnail" boxSize="100px" rounded="md" objectFit="cover" mt={2} />}
+          {productToEdit?.thumbnail && <Image src={`${productToEdit.thumbnail?.formats?.thumbnail?.url}`} alt="Current thumbnail" boxSize="100px" rounded="md" objectFit="cover" mt={2} />}
         </FileUpload.Root>
       ) : input.name === "category" ? (
         <Input
@@ -124,8 +123,7 @@ console.log(isOnline);
           type={input.type}
           name={input.name}
           value={getInputValue(productToEdit, input.name)}
-          readOnly // جعل الـ category للقراءة فقط لأننا نحتاج select أو dropdown
-          // يمكنك استبدال هذا بـ select dropdown إذا كان لديك قائمة بالـ categories
+          readOnly 
         />
       ) : (
         <Input
@@ -198,7 +196,7 @@ console.log(isOnline);
                   <Table.Cell textAlign={"center"}>{product.title}</Table.Cell>
                   <Table.Cell textAlign={"center"}> {product?.category?.title}</Table.Cell>
                   <Table.Cell textAlign={"center"}>
-                    <Image src={`${import.meta.env.VITE_IMG_URL}${product.thumbnail.formats.thumbnail.url}`} alt={product.title} boxSize="50px" rounded="md" objectFit="cover" mx={"auto"} />
+                    <Image src={`${product.thumbnail?.formats?.thumbnail?.url}`} alt={product.title} boxSize="50px" rounded="md" objectFit="cover" mx={"auto"} />
                   </Table.Cell>
                   <Table.Cell textAlign={"center"}>{product.price}</Table.Cell>
                   <Table.Cell textAlign={"center"}>{product.stock}</Table.Cell>

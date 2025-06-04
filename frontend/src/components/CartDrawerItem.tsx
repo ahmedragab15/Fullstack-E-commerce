@@ -17,7 +17,7 @@ const CartDrawerItem = (product: IProduct) => {
   return (
     <Box p={3} rounded="lg" bg={bg} boxShadow="lg" borderBottom={"1px solid"} borderColor={useColorModeValue("gray.200","gray.600")} mb={5} overflowY={"auto"}>
       <Flex gap={4}>
-        <Image src={`${import.meta.env.VITE_IMG_URL}${product.thumbnail.formats.thumbnail.url}`} alt={product.title} boxSize="80px" rounded="md" objectFit="cover" />
+        <Image src={`${product.thumbnail?.formats?.thumbnail?.url}`} alt={product.title} boxSize="80px" rounded="md" objectFit="cover" />
         <Stack spaceX={1} flex="1">
           <HStack justifyContent="space-between">
             <Text fontWeight="medium" fontSize="sm" lineClamp={2}>

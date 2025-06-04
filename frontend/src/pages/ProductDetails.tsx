@@ -51,7 +51,7 @@ const ProductDetails = () => {
           item ? (
             <Box divideY="1px">
               <Card.Body key={item.documentId} spaceY="3">
-                <Image src={`${import.meta.env.VITE_IMG_URL}${item.thumbnail?.formats?.thumbnail?.url}`} alt={item.title} borderRadius={"lg"} h={200} maxW={"full"} objectFit={"contain"} />
+                <Image src={`${item.thumbnail?.formats?.thumbnail?.url}`} alt={item.title} borderRadius={"lg"} h={200} maxW={"full"} objectFit={"contain"} />
                 <Stack mt={6} spaceY={3}>
                   <Heading textAlign={"center"}>{item.title}</Heading>
                   <Text textAlign={"center"}>{item.description}</Text>

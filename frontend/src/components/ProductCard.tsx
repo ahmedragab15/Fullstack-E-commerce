@@ -19,7 +19,7 @@ const ProductCard = ({ product }: IProps) => {
 
   return (
     <Card.Root overflow="hidden" border={"1px solid #a8b5c8"} bg={"none"} _hover={{ shadow: "md" }} borderRadius="lg" boxShadow="base">
-      <Image boxSize={200} objectFit={"cover"} mx={"auto"} mt={3} borderRadius={"full"} src={`${import.meta.env.VITE_IMG_URL}${thumbnail?.formats?.thumbnail?.url}`} alt={title} />
+      <Image boxSize={200} objectFit={"cover"} mx={"auto"} mt={3} borderRadius={"full"} src={`${thumbnail?.formats?.thumbnail?.url}`} alt={title} />
       <Card.Body spaceY="3">
         <Card.Title fontSize={"md"} textAlign={"center"} lineClamp={2}>
           {title}

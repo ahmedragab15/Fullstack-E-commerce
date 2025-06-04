@@ -35,7 +35,6 @@ export const userLogin = createAsyncThunk<IUserResponse, IForm>("login/userLogin
     const { data } = await axiosInstance.post(`/auth/local`, user);
     return data;
   } catch (err) {
-    console.log(err);
     const error = err as AxiosError<{ error: { message: string } }>;
     return thunkApi.rejectWithValue(error.response?.data.error.message || "Login failed");
   }
