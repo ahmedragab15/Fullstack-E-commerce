@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import loginSlice from "./features/loginSlice";
 import globalSlice from "./features/globalSlice";
+import networkSlice from "./features/networkSlice";
 import cartSlice from "./features/cartSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -16,6 +17,7 @@ const store = configureStore({
   reducer: {
     login: loginSlice,
     global: globalSlice,
+    network: networkSlice,
     cart: persistedCart,
     [productsApiSlice.reducerPath]: productsApiSlice.reducer,
   },

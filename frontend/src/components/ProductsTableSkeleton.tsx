@@ -1,17 +1,31 @@
-import { Skeleton, Table} from "@chakra-ui/react";
+import { Skeleton, Table } from "@chakra-ui/react";
 
 const DashboardProductsTableSkeleton = () => {
   return (
     <Table.Root size="lg" striped showColumnBorder variant="outline">
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader textAlign="center">ID</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Title</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Category</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Thumbnail</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Price</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Stock</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="center">Action</Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="center">
+            <Skeleton height="16px" width="40px" mx="auto" />
+          </Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
 

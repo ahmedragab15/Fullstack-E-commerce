@@ -23,7 +23,6 @@ export const productsApiSlice = createApi({
           url: `/products/${documentId}`,
           method: "DELETE",
           headers: {
-            "Content-type": "application/json; charset-UTF-8",
             Authorization: `Bearer ${CookieService.get("jwt")}`,
           },
         };
@@ -31,23 +30,29 @@ export const productsApiSlice = createApi({
       invalidatesTags: ["Products"],
     }),
     updateDashboardProduct: builder.mutation({
-      query: (arg) => {
-        return {
-          url: `/products/${arg?.documentId}`,
-          method: "PUT",
-          headers: {
-            "Content-type": "application/json; charset-UTF-8",
-            Authorization: `Bearer ${CookieService.get("jwt")}`,
-          },
-          body: {
-            data: {
-              ...arg,
-            },
-          },
-        };
+      query: ({ documentId, body }) => ({
+        url: `/products/${documentId}?populate=category&populate=thumbnail`,
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${CookieService.get("jwt")}`,
+        },
+        body,
+      }),
+      async onQueryStarted({ documentId, ...patch }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          productsApiSlice.util.updateQueryData("getDashboardProducts", documentId, (draft) => {
+            Object.assign(draft, patch);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
       },
+      invalidatesTags: ["Products"],
     }),
   }),
 });
 
-export const { useGetDashboardProductsQuery, useDeleteDashboardProductMutation,useUpdateDashboardProductMutation } = productsApiSlice;
+export const { useGetDashboardProductsQuery, useDeleteDashboardProductMutation, useUpdateDashboardProductMutation } = productsApiSlice;

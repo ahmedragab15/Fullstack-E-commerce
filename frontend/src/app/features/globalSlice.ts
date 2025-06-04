@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 
-interface DrawerState {
+interface IProps {
   isOpen: boolean;
 }
 
-const initialState: DrawerState = {
+const initialState: IProps = {
   isOpen: false,
 };
 

@@ -45,10 +45,15 @@ const ErrorMessage = ({ error }: { error: TError }) => {
               </Alert.Content>
             </Flex>
           </Box>
-          <Box>
+          <Box spaceX={2}>
             <Button asChild variant={"surface"} color={"white"}>
               <Link to="/" reloadDocument>
                 Go Back to Home
+              </Link>
+            </Button>
+            <Button asChild variant={"outline"} color={"black"} _hover={{ bg: "black", color: "white" }}>
+              <Link to="." reloadDocument>
+                Refresh the Page
               </Link>
             </Button>
             <CloseButton alignSelf="start" position="relative" top={0} onClick={() => setIsVisible(false)} />
@@ -60,22 +65,3 @@ const ErrorMessage = ({ error }: { error: TError }) => {
 };
 
 export default ErrorMessage;
-
-// return (
-//   <Box py={4}>
-//     <Alert status="error" variant="subtle" bg="red.50" color="red.800" borderRadius="md" boxShadow="md" p={4}>
-//       <Flex w="full" justify="space-between" align="start">
-//         <Box>
-//           <Flex align="center" gap={2} mb={1}>
-//             <AlertIcon />
-//             <AlertTitle fontSize="lg" fontWeight="bold">
-//               {status ? `Error ${status}` : "Error"}
-//             </AlertTitle>
-//           </Flex>
-//           <AlertDescription fontSize="sm">{message}</AlertDescription>
-//         </Box>
-//         <CloseButton alignSelf="start" position="relative" top={0} onClick={() => setIsVisible(false)} />
-//       </Flex>
-//     </Alert>
-//   </Box>
-// );

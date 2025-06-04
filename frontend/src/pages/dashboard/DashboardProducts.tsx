@@ -1,4 +1,4 @@
-import { useDeleteDashboardProductMutation, useGetDashboardProductsQuery} from "@/app/services/productsApiSlice";
+import { useDeleteDashboardProductMutation, useGetDashboardProductsQuery, useUpdateDashboardProductMutation } from "@/app/services/productsApiSlice";
 import ErrorMessage from "@/components/ErrorMessage";
 import DashboardProductsTableSkeleton from "@/components/ProductsTableSkeleton";
 import type { IProduct } from "@/interface";
@@ -13,20 +13,23 @@ import { LuFileImage } from "react-icons/lu";
 import AlertDialog from "@/shared/AlertDialog";
 import Modal from "@/shared/Modal";
 import { productInputs } from "@/constants";
-import { useState, type SetStateAction } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
+import { useSelector } from "react-redux";
+import { selectNetwork } from "@/app/features/networkSlice";
 
 const DashboardProductsTable = () => {
   // const [selection, setSelection] = useState<string[]>([]);
   const { isLoading, data, error } = useGetDashboardProductsQuery({ page: 1 });
   const [destoryProduct, { isLoading: isDeleting, isSuccess }] = useDeleteDashboardProductMutation();
-
+  const [updateProduct, { isLoading: isUpdating, isSuccess: isUpdated }] = useUpdateDashboardProductMutation();
+    const { isOnline } = useSelector(selectNetwork);
   // const hasSelection = selection.length > 0;
   // const indeterminate = hasSelection && selection.length < data?.data.length;
+console.log(isOnline);
 
   //* Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState<null | IProduct>(null);
-  // console.log(productToEdit);
 
   const openEditModal = (product: SetStateAction<IProduct | null>) => {
     setProductToEdit(product);
@@ -34,36 +37,39 @@ const DashboardProductsTable = () => {
   };
 
   const [thumbnail, setThumbnail] = useState<File | null>(null);
-  console.log(thumbnail);
-  
-const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = e.target.files;
-  if (!files || files.length === 0) return;
-  setThumbnail(files[0]);
-};
+
+  const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setThumbnail(files[0]);
+    console.log(thumbnail);
+  };
 
   const handleUpdateProduct = () => {
-    // useUpdateDashboardProductMutation(productToEdit);
+    if (!productToEdit) return;
 
-    // setIsEditModalOpen(false);
-    // setProductToEdit(null);
+    const updatedData = {
+      data: {
+        title: productToEdit.title,
+        description: productToEdit.description,
+        price: Number(productToEdit.price),
+        stock: Number(productToEdit.stock),
+      },
+    };
 
-    const formData = new FormData();
-    // formData.append("data", JSON.stringify(productToEdit));
-    formData.append(
-      "data",
-      JSON.stringify({
-        title: productToEdit?.title,
-        description: productToEdit?.description,
-        category: productToEdit?.category?.title,
-        price: productToEdit?.price,
-        stock: productToEdit?.stock,
-      })
-    );
-    if (thumbnail) {
-      formData.append("files.thumbnail", thumbnail);
-    }
+    updateProduct({
+      documentId: productToEdit.documentId,
+      body: updatedData,
+    });
   };
+
+  useEffect(() => {
+    if (isUpdated) {
+      setIsEditModalOpen(false);
+      setProductToEdit(null);
+      setThumbnail(null);
+    }
+  }, [isUpdated]);
 
   //* Remove Modal
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -81,7 +87,6 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
 
   const getInputValue = (product: IProduct | null, name: string) => {
     if (!product) return "";
-
     switch (name) {
       case "category":
         return product.category?.title ?? "";
@@ -97,7 +102,6 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
   const renderInput = productInputs.map((input) => (
     <Field.Root key={input.name}>
       <Field.Label>{input.label}</Field.Label>
-
       {input.type === "number" ? (
         <NumberInput.Root w={"full"} defaultValue={String(getInputValue(productToEdit, input.name) || 0)} onValueChange={(e) => setProductToEdit((prev) => (prev ? { ...prev, [input.name]: Number(e.value) } : null))}>
           <NumberInput.Control />
@@ -112,6 +116,7 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
             </Button>
           </FileUpload.Trigger>
           <FileUpload.List showSize clearable />
+          {productToEdit?.thumbnail && <Image src={`${import.meta.env.VITE_IMG_URL}${productToEdit.thumbnail.formats?.thumbnail?.url}`} alt="Current thumbnail" boxSize="100px" rounded="md" objectFit="cover" mt={2} />}
         </FileUpload.Root>
       ) : input.name === "category" ? (
         <Input
@@ -119,19 +124,8 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
           type={input.type}
           name={input.name}
           value={getInputValue(productToEdit, input.name)}
-          onChange={(e) => {
-            setProductToEdit((prev) =>
-              prev
-                ? {
-                    ...prev,
-                    category: {
-                      ...prev.category,
-                      title: e.target.value,
-                    },
-                  }
-                : null
-            );
-          }}
+          readOnly // جعل الـ category للقراءة فقط لأننا نحتاج select أو dropdown
+          // يمكنك استبدال هذا بـ select dropdown إذا كان لديك قائمة بالـ categories
         />
       ) : (
         <Input
@@ -147,7 +141,7 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
     </Field.Root>
   ));
 
-  if (isLoading) return <DashboardProductsTableSkeleton />;
+  if (isLoading || !isOnline) return <DashboardProductsTableSkeleton />;
   if (error) return <ErrorMessage error={error} />;
 
   return (
@@ -219,7 +213,7 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
                         <MdDelete title="Remove Product" />
                       </Button>
 
-                      <Button asChild variant={"solid"} bg={"blue.500"} color={"#e6f3fd"} size={"xl"} border={"none"} py={4} px={2} overflow={"hidden"} w={"fit-content"} _hover={{ bg: "#e6f3fd", color: "blue.500", border: "transparent" }} onClick={() => openEditModal(product)}>
+                      <Button variant={"solid"} bg={"blue.500"} color={"#e6f3fd"} size={"xl"} border={"none"} py={4} px={2} overflow={"hidden"} w={"fit-content"} _hover={{ bg: "#e6f3fd", color: "blue.500", border: "transparent" }} onClick={() => openEditModal(product)}>
                         <FaPen title="Edit Product" />
                       </Button>
                     </Flex>
@@ -268,7 +262,7 @@ const onChangeThumbnail = (e: React.ChangeEvent<HTMLInputElement>) => {
       {/* AlertDialog */}
       <AlertDialog isOpen={isRemoveModalOpen} onOpenChange={setIsRemoveModalOpen} title="Delete Product" description={`Are you sure you want to delete the product? This action cannot be undone.`} confirmText="Destroy" isLoading={isDeleting} loadingText="Destroying..." isSuccess={isSuccess} cancelText="Cancel" onConfirm={handleConfirm} />
       {/* Edit Modal */}
-      <Modal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen} title="Edit Product" confirmLabel="Update" onConfirm={handleUpdateProduct} isLoading={false} loadingText="Updating...">
+      <Modal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen} title="Edit Product" confirmLabel="Update" onConfirm={handleUpdateProduct} isLoading={isUpdating} loadingText="Updating...">
         {renderInput}
       </Modal>
     </>

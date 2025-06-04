@@ -2,8 +2,8 @@ import { type ReactNode } from "react";
 import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react";
 
 interface AlertDialogProps {
-  isOpen: boolean; // تتحكم في الفتح من الخارج
-  onOpenChange: (open: boolean) => void; // تتابع تغييرات الفتح
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void; 
   title?: string;
   description?: string;
   confirmText?: string;
@@ -14,7 +14,7 @@ interface AlertDialogProps {
   cancelText?: string;
   onConfirm: () => void;
   onCancel?: () => void;
-  triggerButton?: ReactNode; // اختياري
+  triggerButton?: ReactNode;
 }
 
 const AlertDialog = ({ isOpen, onOpenChange, title = "Are you sure?", description = "This action cannot be undone.", confirmText = "Confirm", isLoading = false, loadingText = "Confirming...", isSuccess = false, confirmBG = "red.600", cancelText = "Cancel", onConfirm, onCancel, triggerButton }: AlertDialogProps) => {
