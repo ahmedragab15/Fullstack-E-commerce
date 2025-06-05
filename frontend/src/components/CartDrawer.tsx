@@ -1,13 +1,13 @@
-import { closeDrawer, selectGlobal } from "@/app/features/globalSlice";
+import { closeDrawer, selectCartDrawer } from "@/app/features/cartDrawerSlice";
 import { Button, CloseButton, Drawer, Portal, Text } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
 import CartDrawerItem from "./CartDrawerItem";
 import { clearCart, selectCart } from "@/app/features/cartSlice";
+import { useAppDispatch, useAppSelector } from "@/app/store";
 
 const CartDrawer = () => {
-  const { isOpen } = useSelector(selectGlobal);
-  const dispatch = useDispatch();
-  const { cartItems } = useSelector(selectCart);
+  const { isOpen } = useAppSelector(selectCartDrawer);
+  const dispatch = useAppDispatch();
+  const { cartItems } = useAppSelector(selectCart);
   const clearCartHandler = () => {
     dispatch(clearCart());
   };

@@ -1,11 +1,12 @@
-import { Avatar, Box, CloseButton, Flex, HStack, VStack, Icon, Text, Drawer, DrawerContent, useDisclosure, Menu, type FlexProps, type BoxProps, Portal, Button } from "@chakra-ui/react";
+import { Avatar, Box, CloseButton, Flex, HStack, VStack, Icon, Text, Drawer, DrawerContent, useDisclosure, Menu, type FlexProps, type BoxProps, Portal, Button, ClientOnly, Skeleton, IconButton } from "@chakra-ui/react";
 import { FiHome, FiMenu, FiBell, FiChevronDown } from "react-icons/fi";
 import type { IconType } from "react-icons/lib";
 import { NavLink, Outlet } from "react-router-dom";
 import { useColorMode, useColorModeValue } from "../../components/ui/color-mode";
-import { CgMoon, CgSun } from "react-icons/cg";
 import { HiOutlineViewColumns } from "react-icons/hi2";
 import { BsGrid3X3 } from "react-icons/bs";
+import { LuMoon, LuSun } from "react-icons/lu";
+import CookieService from "@/services/CookieService";
 
 interface LinkItemProps {
   to: string;
@@ -14,7 +15,7 @@ interface LinkItemProps {
 }
 
 interface NavItemProps extends FlexProps {
-  icon: IconType;
+  icon?: IconType;
   children: React.ReactNode;
   to: string;
 }
@@ -37,9 +38,9 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   return (
     <Box transition="3s ease" bg={useColorModeValue("white", "gray.800")} borderRight="1px" borderRightColor={useColorModeValue("gray.200", "gray.700")} w={{ base: "full", md: 60 }} pos="fixed" h="full" {...rest}>
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+        <NavItem to={"/"} fontSize="2xl" fontFamily="monospace" fontWeight="bold">
           Logo
-        </Text>
+        </NavItem>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -86,20 +87,27 @@ const NavItem = ({ to, icon, children, ...rest }: NavItemProps) => {
 };
 
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+    const userName = CookieService.get("username");
+    const onLogout = () => {
+      CookieService.remove("jwt");
+      location.reload();
+    };
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex ml={{ base: 0, md: 60 }} px={{ base: 4, md: 4 }} height="20" alignItems="center" bg={useColorModeValue("white", "gray.900")} borderBottomWidth="1px" borderBottomColor={useColorModeValue("gray.200", "gray.700")} justifyContent={{ base: "space-between", md: "flex-end" }} {...rest}>
       <Button display={{ base: "flex", md: "none" }} onClick={onOpen} variant="outline" aria-label="open menu">
         <FiMenu />
       </Button>
-      <Text display={{ base: "flex", md: "none" }} fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+      <NavItem to={"/"} display={{ base: "flex", md: "none" }} fontSize="2xl" fontFamily="monospace" fontWeight="bold">
         Logo
-      </Text>
+      </NavItem>
 
       <HStack spaceX={{ base: "0", md: "6" }}>
-        <Button bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }} onClick={toggleColorMode}>
-          {colorMode === "light" ? <CgMoon /> : <CgSun />}
-        </Button>
+        <ClientOnly fallback={<Skeleton boxSize="8" />}>
+          <IconButton onClick={toggleColorMode} variant="outline" size="md" _hover={{ bg: colorMode === "light" ? "gray.200" : "gray.600" }}>
+            {colorMode === "light" ? <LuSun /> : <LuMoon />}
+          </IconButton>
+        </ClientOnly>
         <Button size="lg" variant="ghost" aria-label="open menu">
           <FiBell />
         </Button>
@@ -113,7 +121,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                   <Avatar.Image src="https://bit.ly/sage-adebayo" />
                 </Avatar.Root>
                 <VStack display={{ base: "none", md: "flex" }} alignItems="flex-start" spaceY="1px" ml="2">
-                  <Text fontSize="sm">Justina Clark</Text>
+                  <Text fontSize="sm">{userName || "userName"} </Text>
                   <Text fontSize="xs" color="gray.600">
                     Admin
                   </Text>
@@ -131,7 +139,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                     <Menu.Item value="profile">profile</Menu.Item>
                     <Menu.Item value="Settings">Settings</Menu.Item>
                     <Menu.Item value="Billing">Billing</Menu.Item>
-                    <Menu.Item value="Sign out">Sign out</Menu.Item>
+                    <Menu.Item value="Sign out" onClick={onLogout}>
+                      Sign out
+                    </Menu.Item>
                   </Menu.ItemGroup>
                 </Menu.Content>
               </Menu.Positioner>

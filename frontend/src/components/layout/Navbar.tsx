@@ -1,12 +1,12 @@
-import { Box, Flex, Button, Stack, Menu, Center, Avatar, Portal } from "@chakra-ui/react";
+import { Box, Flex, Button, Stack, Menu, Center, Avatar, Portal, ClientOnly, Skeleton, IconButton } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import { CgMoon, CgSun } from "react-icons/cg";
-import { useColorMode, useColorModeValue } from "../components/ui/color-mode";
+import { useColorMode, useColorModeValue } from "../ui/color-mode";
 import type { ReactNode } from "react";
 import CookieService from "@/services/CookieService";
-import { useDispatch, useSelector } from "react-redux";
-import { openDrawer } from "@/app/features/globalSlice";
+import { openDrawer } from "@/app/features/cartDrawerSlice";
 import { selectCart } from "@/app/features/cartSlice";
+import { LuMoon, LuSun } from "react-icons/lu";
+import { useAppDispatch, useAppSelector } from "@/app/store";
 
 const NavItem = ({ children, to }: { to: string; children: ReactNode }) => {
   return (
@@ -28,13 +28,13 @@ const NavItem = ({ children, to }: { to: string; children: ReactNode }) => {
 const Navbar = () => {
   const token = CookieService.get("jwt");
   const userName = CookieService.get("username");
-  const onLogout = ()=>{
-    CookieService.remove("jwt")
-    location.reload()
-  }
+  const onLogout = () => {
+    CookieService.remove("jwt");
+    location.reload();
+  };
   const { colorMode, toggleColorMode } = useColorMode();
-  const dispatch = useDispatch();
-  const {cartItems} = useSelector(selectCart)
+  const dispatch = useAppDispatch();
+  const { cartItems } = useAppSelector(selectCart);
 
   return (
     <>
@@ -46,14 +46,18 @@ const Navbar = () => {
               <NavItem to={"/"}>Home</NavItem>
               <NavItem to={"/about"}>About</NavItem>
               <NavItem to={"/products"}>Products</NavItem>
+              <NavItem to={"/dashboard"}>Dashboard</NavItem>
             </Flex>
           </Flex>
 
           <Flex alignItems={"center"}>
             <Stack direction={"row"} alignItems={"center"} spaceX={5}>
-              <Button bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }} onClick={toggleColorMode}>
-                {colorMode === "light" ? <CgMoon /> : <CgSun />}
-              </Button>
+              <ClientOnly fallback={<Skeleton boxSize="8" />}>
+                <IconButton onClick={toggleColorMode} variant="outline" size="md" _hover={{ bg: colorMode === "light" ? "gray.200" : "gray.600" }}>
+                  {colorMode === "light" ? <LuSun /> : <LuMoon />}
+                </IconButton>
+              </ClientOnly>
+
               <Menu.Root>
                 <Button onClick={() => dispatch(openDrawer())} bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }}>
                   Cart ({cartItems.length})
@@ -69,7 +73,7 @@ const Navbar = () => {
                         </Avatar.Root>
                       </Button>
                     </Menu.Trigger>
-                    
+
                     <Portal>
                       <Menu.Positioner>
                         <Menu.Content w={200} py={5}>
@@ -98,7 +102,7 @@ const Navbar = () => {
                   </>
                 ) : (
                   <Flex alignItems={"center"}>
-                    <NavItem to={"/sign"}>Signup</NavItem> /<NavItem to={"/login"}>Login</NavItem>
+                    <NavItem to={"/register"}>Register</NavItem> /<NavItem to={"/login"}>Login</NavItem>
                   </Flex>
                 )}
               </Menu.Root>

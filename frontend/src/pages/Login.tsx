@@ -6,8 +6,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "@/schema";
 import { selectLogin, userLogin } from "@/app/features/loginSlice";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch } from "@/app/store";
+import { useAppDispatch, useAppSelector } from "@/app/store";
 import { toaster } from "@/components/ui/toaster";
 
 interface IForm {
@@ -17,9 +16,9 @@ interface IForm {
 
 const Login = () => {
   const { colorMode } = useColorMode();
-  const { isLoading, error } = useSelector(selectLogin);
-  const dispatch = useDispatch<AppDispatch>();
-  
+  const { isLoading } = useAppSelector(selectLogin);
+  const dispatch = useAppDispatch();
+
   const {
     register,
     handleSubmit,
@@ -28,23 +27,21 @@ const Login = () => {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<IForm> = async(data) => {
-    const promise = dispatch(userLogin(data)).unwrap();
-
-    toaster.promise(promise, {
-      loading: { title: "Logging in...", description: "Please wait" },
-      success: {
-        title: "Login successful!",
-        description: "Welcome back!",
-      },
-      error: {
-        title: "Login failed",
-        description: error ? error : "Something went wrong",
-      },
-    });
-    setTimeout(()=>{
-      location.reload();
-    },1000)
+  const onSubmit: SubmitHandler<IForm> = async (data) => {
+    const resultAction = await dispatch(userLogin(data));
+    if (userLogin.fulfilled.match(resultAction)) {
+      toaster.success({
+        title: "Logging in...",
+      });
+      setTimeout(() => {
+        window.location.href = "/";
+      })
+    } else if (userLogin.rejected.match(resultAction)) {
+      const errorMessage = resultAction.payload as string;
+      toaster.error({
+        title: errorMessage || "Login failed",
+      });
+    }
   };
 
   return (

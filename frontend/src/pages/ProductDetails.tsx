@@ -1,4 +1,5 @@
 import { addToCart } from "@/app/features/cartSlice";
+import ErrorMessage from "@/components/ErrorMessage";
 import ProductDetailsSkeleton from "@/components/ProductDetailsSkeleton";
 import { useColorMode } from "@/components/ui/color-mode";
 import { axiosInstance } from "@/config/fetchApi";
@@ -7,7 +8,8 @@ import { Box, Button, Card, Flex, Heading, Image, Stack, Text } from "@chakra-ui
 import { useQuery } from "@tanstack/react-query";
 import { BsArrowLeft } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import PageNotFound from "./PageNotFound";
 
 const ProductDetails = () => {
   const { slug } = useParams();
@@ -36,13 +38,15 @@ const ProductDetails = () => {
     dispatch(addToCart(data?.data[0]));
   };
 
-  if (!slug) return <Navigate to="/not-found" />; //todo not found page
   if (isLoading) return <ProductDetailsSkeleton />;
-  if (error) return <h3>{error?.message}</h3>; //todo error message component
+  if (error) return <ErrorMessage error={error} />;
+  if (!data?.data || data.data.length === 0) {
+    return <PageNotFound />;
+  }
 
   return (
     <>
-      <Flex alignItems={"center"} maxW={"sm"} my={7} fontSize={"lg"} cursor={"pointer"} onClick={goBack}>
+      <Flex alignItems={"center"} maxW={"sm"} my={7} mx={"auto"} fontSize={"lg"} cursor={"pointer"} onClick={goBack}>
         <BsArrowLeft />
         <Text ml={2}>Back</Text>
       </Flex>
@@ -71,7 +75,7 @@ const ProductDetails = () => {
               </Card.Footer>
             </Box>
           ) : (
-            <Text textAlign="center">No product found.</Text> //todo better way to show ther's no product message
+            <Text textAlign="center">No product found.</Text>
           )
         )}
       </Card.Root>

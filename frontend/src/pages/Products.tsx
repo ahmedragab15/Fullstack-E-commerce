@@ -1,3 +1,4 @@
+import ErrorMessage from "@/components/ErrorMessage";
 import ProductCard from "@/components/ProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import { axiosInstance } from "@/config/fetchApi";
@@ -8,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 const Products = () => {
   const getProductList = async () => {
     try {
-      const { data, status } = await axiosInstance.get("/products?populate=thumbnail");
+      const { data, status } = await axiosInstance.get("/products?populate=thumbnail&populate=category");
       if (status === 200) {
         return data;
       }
@@ -30,7 +31,7 @@ const Products = () => {
         ))}
       </Grid>
     );
-  if (error) return <h3>{error?.message}</h3>;
+  if (error) return <ErrorMessage error={error} />;
 
   return (
     <Container>

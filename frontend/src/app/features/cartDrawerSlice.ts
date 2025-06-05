@@ -9,7 +9,7 @@ const initialState: IProps = {
   isOpen: false,
 };
 
-const globalSlice = createSlice({
+const cartDrawerSlice = createSlice({
   name: "global",
   initialState,
   reducers: {
@@ -24,6 +24,6 @@ const globalSlice = createSlice({
     },
   },
 });
-export default globalSlice.reducer;
-export const { openDrawer, closeDrawer, toggleDrawer } = globalSlice.actions;
-export const selectGlobal = (state: RootState) => state.global;
+export default cartDrawerSlice.reducer;
+export const { openDrawer, closeDrawer, toggleDrawer } = cartDrawerSlice.actions;
+export const selectCartDrawer = (state: RootState) => state.cartDrawer;

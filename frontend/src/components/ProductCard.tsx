@@ -2,8 +2,8 @@ import { Button, Card, Image, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useColorMode } from "./ui/color-mode";
 import type { IProduct } from "@/interface";
-import { useDispatch } from "react-redux";
 import { addToCart } from "@/app/features/cartSlice";
+import { useAppDispatch } from "@/app/store";
 
 interface IProps {
   product: IProduct;
@@ -12,7 +12,7 @@ interface IProps {
 const ProductCard = ({ product }: IProps) => {
   const { title, description, thumbnail, price, slug } = product;
   const { colorMode } = useColorMode();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const addToCartHandler = () => {
     dispatch(addToCart(product));
   };

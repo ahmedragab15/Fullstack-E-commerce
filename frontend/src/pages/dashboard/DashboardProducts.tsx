@@ -2,29 +2,30 @@ import { useDeleteDashboardProductMutation, useGetDashboardProductsQuery, useUpd
 import ErrorMessage from "@/components/ErrorMessage";
 import DashboardProductsTableSkeleton from "@/components/ProductsTableSkeleton";
 import type { IProduct } from "@/interface";
-import { Button, ButtonGroup, Field, FileUpload, Flex, IconButton, Image, Input, NumberInput, Pagination, Stack, Table } from "@chakra-ui/react";
-// import { ActionBar, Checkbox, Portal, Kbd } from "@chakra-ui/react";
+import { ActionBar, Button, ButtonGroup, Checkbox, Field, FileUpload, Flex, IconButton, Image, Input, Kbd, NumberInput, Pagination, Portal, Stack, Table } from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import { IoMdEye } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
 import { LuFileImage } from "react-icons/lu";
-import AlertDialog from "@/shared/AlertDialog";
-import Modal from "@/shared/Modal";
+import AlertDialog from "@/components/shared/AlertDialog";
+import Modal from "@/components/shared/Modal";
 import { productInputs } from "@/constants";
 import { useEffect, useState, type SetStateAction } from "react";
-import { useSelector } from "react-redux";
 import { selectNetwork } from "@/app/features/networkSlice";
+import { useColorModeValue } from "@/components/ui/color-mode";
+import { useAppSelector } from "@/app/store";
 
 const DashboardProductsTable = () => {
-  // const [selection, setSelection] = useState<string[]>([]);
+  const bg = useColorModeValue("gray.200", "gray.800");
+  const [selection, setSelection] = useState<string[]>([]);
   const { isLoading, data, error } = useGetDashboardProductsQuery({ page: 1 });
   const [destoryProduct, { isLoading: isDeleting, isSuccess }] = useDeleteDashboardProductMutation();
   const [updateProduct, { isLoading: isUpdating, isSuccess: isUpdated }] = useUpdateDashboardProductMutation();
-    const { isOnline } = useSelector(selectNetwork);
-  // const hasSelection = selection.length > 0;
-  // const indeterminate = hasSelection && selection.length < data?.data.length;
+  const { isOnline } = useAppSelector(selectNetwork);
+  const hasSelection = selection.length > 0;
+  const indeterminate = hasSelection && selection.length < data?.data.length;
 
   //* Edit Modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -118,13 +119,7 @@ const DashboardProductsTable = () => {
           {productToEdit?.thumbnail && <Image src={`${productToEdit.thumbnail?.formats?.thumbnail?.url}`} alt="Current thumbnail" boxSize="100px" rounded="md" objectFit="cover" mt={2} />}
         </FileUpload.Root>
       ) : input.name === "category" ? (
-        <Input
-          placeholder={input.placeholder}
-          type={input.type}
-          name={input.name}
-          value={getInputValue(productToEdit, input.name)}
-          readOnly 
-        />
+        <Input placeholder={input.placeholder} type={input.type} name={input.name} value={getInputValue(productToEdit, input.name)} readOnly />
       ) : (
         <Input
           placeholder={input.placeholder}
@@ -145,24 +140,24 @@ const DashboardProductsTable = () => {
   return (
     <>
       <Stack width="full" gap="5">
-        <Table.ScrollArea maxW={"full"}>
-          <Table.Root size="lg" striped showColumnBorder stickyHeader variant={"outline"} bg={"gray.700"}>
+        <Table.ScrollArea w={"full"}>
+          <Table.Root size="lg" striped showColumnBorder stickyHeader variant={"outline"} bg={bg}>
             <Table.Caption mt={5}>Total Entries: {data?.data?.length ?? 0}</Table.Caption>
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader textAlign={"center"}>
-                  {/* <Checkbox.Root
+                  <Checkbox.Root
                     size="sm"
                     top="0.5"
                     aria-label="Select all rows"
                     checked={indeterminate ? "indeterminate" : selection.length > 0}
                     onCheckedChange={(changes) => {
-                      setSelection(changes.checked ? data?.data.map((item: { title: string; }) => item.title) : []);
+                      setSelection(changes.checked ? data?.data.map((item: { title: string }) => item.title) : []);
                     }}
                   >
                     <Checkbox.HiddenInput />
                     <Checkbox.Control />
-                  </Checkbox.Root> */}
+                  </Checkbox.Root>
                   ID - DocumentID
                 </Table.ColumnHeader>
                 <Table.ColumnHeader textAlign={"center"}>Title</Table.ColumnHeader>
@@ -175,22 +170,21 @@ const DashboardProductsTable = () => {
             </Table.Header>
             <Table.Body>
               {data?.data.map((product: IProduct) => (
-                <Table.Row key={product.documentId}>
-                  {/* data-selected={selection.includes(item.title) ? "" : undefined} */}
+                <Table.Row key={product.documentId} data-selected={selection.includes(product.title) ? "" : undefined}>
                   <Table.Cell textAlign={"center"}>
-                    {/* <Checkbox.Root
+                    <Checkbox.Root
                       size="sm"
                       top="0.5"
                       mr={3}
                       aria-label="Select row"
-                      checked={selection.includes(item.title)}
+                      checked={selection.includes(product.title)}
                       onCheckedChange={(changes) => {
-                        setSelection((prev) => (changes.checked ? [...prev, item.title] : selection.filter((title) => title !== item.title)));
+                        setSelection((prev) => (changes.checked ? [...prev, product.title] : selection.filter((title) => title !== product.title)));
                       }}
                     >
                       <Checkbox.HiddenInput />
                       <Checkbox.Control />
-                    </Checkbox.Root> */}
+                    </Checkbox.Root>
                     {product.id} - {product.documentId}
                   </Table.Cell>
                   <Table.Cell textAlign={"center"}>{product.title}</Table.Cell>
@@ -210,7 +204,6 @@ const DashboardProductsTable = () => {
                       <Button variant="solid" bg="red.500" color="#e6f3fd" size="xl" border="none" py={3} px={2} overflow="hidden" w="fit-content" _hover={{ bg: "#e6f3fd", color: "red.500", border: "transparent" }} onClick={() => openConfirmModal(product.documentId)}>
                         <MdDelete title="Remove Product" />
                       </Button>
-
                       <Button variant={"solid"} bg={"blue.500"} color={"#e6f3fd"} size={"xl"} border={"none"} py={4} px={2} overflow={"hidden"} w={"fit-content"} _hover={{ bg: "#e6f3fd", color: "blue.500", border: "transparent" }} onClick={() => openEditModal(product)}>
                         <FaPen title="Edit Product" />
                       </Button>
@@ -221,8 +214,8 @@ const DashboardProductsTable = () => {
             </Table.Body>
           </Table.Root>
         </Table.ScrollArea>
-
-        {/* <ActionBar.Root open={hasSelection}>
+        {/* ActionBar */}
+        <ActionBar.Root open={hasSelection}>
           <Portal>
             <ActionBar.Positioner>
               <ActionBar.Content>
@@ -237,8 +230,8 @@ const DashboardProductsTable = () => {
               </ActionBar.Content>
             </ActionBar.Positioner>
           </Portal>
-        </ActionBar.Root> */}
-
+        </ActionBar.Root>
+        {/* Pagination */}
         <Pagination.Root count={data?.data.length * 5} pageSize={5} page={1}>
           <ButtonGroup variant="ghost" size="sm" wrap="wrap">
             <Pagination.PrevTrigger asChild>
@@ -246,9 +239,7 @@ const DashboardProductsTable = () => {
                 <LuChevronLeft />
               </IconButton>
             </Pagination.PrevTrigger>
-
             <Pagination.Items render={(page) => <IconButton variant={{ base: "ghost", _selected: "outline" }}>{page.value}</IconButton>} />
-
             <Pagination.NextTrigger asChild>
               <IconButton>
                 <LuChevronRight />

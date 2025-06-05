@@ -1,10 +1,13 @@
 import { Flex, Box, Input, Stack, Button, Heading, Text, Field, FieldHelperText } from "@chakra-ui/react";
 import { useColorMode, useColorModeValue } from "@/components/ui/color-mode";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "@/schema";
+import { selectRegister, userRegister } from "@/app/features/registerSlice";
+import { toaster } from "@/components/ui/toaster";
+import { useAppDispatch, useAppSelector } from "@/app/store";
 
 interface IForm {
   email: string;
@@ -12,7 +15,7 @@ interface IForm {
   username: string;
 }
 
-const SignUp = () => {
+const Register = () => {
   const { colorMode } = useColorMode();
   const {
     register,
@@ -22,8 +25,25 @@ const SignUp = () => {
     resolver: yupResolver(registerSchema),
   });
 
-  const onSubmit: SubmitHandler<IForm> = (data) => {
-    console.log(data);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { isLoading } = useAppSelector(selectRegister);
+
+  const onSubmit: SubmitHandler<IForm> = async (data) => {
+    const resultAction = await dispatch(userRegister(data));
+    if (userRegister.fulfilled.match(resultAction)) {
+      toaster.success({
+        title: "You registered successfully. Redirecting to login...",
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } else if (userRegister.rejected.match(resultAction)) {
+      const errorMessage = resultAction.payload as string;
+      toaster.error({
+        title: errorMessage || "Register failed",
+      });
+    }
   };
 
   return (
@@ -36,6 +56,7 @@ const SignUp = () => {
         </Stack>
         <Box asChild spaceY={4} rounded={"lg"} bg={useColorModeValue("white", "gray.900")} boxShadow={"xl"} p={8}>
           <form onSubmit={handleSubmit(onSubmit)}>
+
             <Field.Root invalid={!!errors?.username}>
               <Field.Label>
                 Username <Field.RequiredIndicator />
@@ -47,6 +68,7 @@ const SignUp = () => {
                 </FieldHelperText>
               )}
             </Field.Root>
+            
             <Field.Root invalid={!!errors?.email}>
               <Field.Label>
                 Email <Field.RequiredIndicator />
@@ -74,6 +96,7 @@ const SignUp = () => {
             <Stack spaceX={10} pt={2}>
               <Button
                 type="submit"
+                loading={isLoading}
                 loadingText="Submitting"
                 size="lg"
                 bg={colorMode === "light" ? "blue.500" : "purple.500"}
@@ -100,4 +123,4 @@ const SignUp = () => {
     </Flex>
   );
 };
-export default SignUp;
+export default Register;

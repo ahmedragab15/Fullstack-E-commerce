@@ -1,12 +1,12 @@
 import { removeFromCart } from "@/app/features/cartSlice";
 import type { IProduct } from "@/interface";
 import { Box, Button, Flex, HStack, Image,  Stack, Text } from "@chakra-ui/react";
-import { useDispatch } from "react-redux";
 import { MdDelete } from "react-icons/md";
 import { useColorModeValue } from "./ui/color-mode";
+import { useAppDispatch } from "@/app/store";
 
 const CartDrawerItem = (product: IProduct) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const removeItemHandler = (product: IProduct) => {
     dispatch(removeFromCart(product));

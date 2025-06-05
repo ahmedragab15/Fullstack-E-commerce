@@ -24,7 +24,6 @@ export interface IProduct {
 
 type TName = "title" | "description" | "price" | "thumbnail" | "category" | "stock";
 
-
 export interface IProductInputs {
   label: string;
   name: TName;
