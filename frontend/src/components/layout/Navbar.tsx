@@ -1,12 +1,13 @@
-import { Box, Flex, Button, Stack, Menu, Center, Avatar, Portal, ClientOnly, Skeleton, IconButton } from "@chakra-ui/react";
+import { Box, Flex, Button, Stack, Menu, Center, Avatar, Portal, ClientOnly, Skeleton, IconButton, Heading, InputGroup, Input } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { useColorMode, useColorModeValue } from "../ui/color-mode";
 import type { ReactNode } from "react";
 import CookieService from "@/services/CookieService";
 import { openDrawer } from "@/app/features/cartDrawerSlice";
 import { selectCart } from "@/app/features/cartSlice";
-import { LuMoon, LuSun } from "react-icons/lu";
+import { LuMoon, LuSearch, LuSun } from "react-icons/lu";
 import { useAppDispatch, useAppSelector } from "@/app/store";
+import { MdOutlineShoppingCart } from "react-icons/md";
 
 const NavItem = ({ children, to }: { to: string; children: ReactNode }) => {
   return (
@@ -38,38 +39,55 @@ const Navbar = () => {
 
   return (
     <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+      <Box bg={useColorModeValue("white", "black")} px={4}>
+        <Flex h={16} alignItems={"center"} justifyContent={"space-evenly"}>
           <Flex alignItems={"center"} gap={8}>
-            <NavItem to={"/"}>Logo</NavItem>
+            <Heading asChild fontSize={"2xl"} letterSpacing={"wide"}>
+              <NavLink to={"/"}>SHOP.CO</NavLink>
+            </Heading>
             <Flex alignItems={"center"} justifyContent={"space-evenly"} gap={4}>
-              <NavItem to={"/"}>Home</NavItem>
-              <NavItem to={"/about"}>About</NavItem>
-              <NavItem to={"/products"}>Products</NavItem>
-              <NavItem to={"/dashboard"}>Dashboard</NavItem>
+              <NavItem to={"/"}>Shop</NavItem>
+              <NavItem to={"/about"}>On Sale</NavItem>
+              <NavItem to={"/products"}>New Arrival</NavItem>
+              <NavItem to={"/dashboard"}>Brands</NavItem>
             </Flex>
           </Flex>
+
+          <InputGroup flex="1" startElement={<LuSearch />} maxW={"md"}>
+            <Input placeholder="Search for products..." rounded={"2xl"} bg={colorMode === "light" ? "#F0F0F0" : "gray.800"} border={"none"} />
+          </InputGroup>
 
           <Flex alignItems={"center"}>
             <Stack direction={"row"} alignItems={"center"} spaceX={5}>
               <ClientOnly fallback={<Skeleton boxSize="8" />}>
-                <IconButton onClick={toggleColorMode} variant="outline" size="md" _hover={{ bg: colorMode === "light" ? "gray.200" : "gray.600" }}>
+                <IconButton
+                  onClick={toggleColorMode}
+                  variant="outline"
+                  size="md"
+                  bg={colorMode === "light" ? "gray.50" : "gray.800"}
+                  _hover={{ bg: colorMode === "light" ? "gray.200" : "gray.800" }}
+                >
                   {colorMode === "light" ? <LuSun /> : <LuMoon />}
                 </IconButton>
               </ClientOnly>
 
               <Menu.Root>
-                <Button onClick={() => dispatch(openDrawer())} bg={colorMode === "light" ? "gray.300" : "gray.600"} color={colorMode === "light" ? "black" : "white"} _hover={{ background: colorMode === "light" ? "gray.200" : "gray.500" }}>
-                  Cart ({cartItems.length})
+                <Button
+                  onClick={() => dispatch(openDrawer())}
+                  bg={colorMode === "light" ? "gray.50" : "gray.800"}
+                  color={colorMode === "light" ? "black" : "white"}
+                  _hover={{ background: colorMode === "light" ? "gray.300" : "gray.700" }}
+                >
+                  <MdOutlineShoppingCart />({cartItems.length})
                 </Button>
 
                 {token ? (
                   <>
                     <Menu.Trigger asChild>
-                      <Button rounded={"full"} variant={"outline"} cursor={"pointer"} minW={0}>
+                      <Button rounded={"full"} variant={"outline"} cursor={"pointer"} minW={0} bg={colorMode === "light" ? "gray.50" : "gray.800"}>
                         <Avatar.Root>
                           <Avatar.Fallback name="Segun Adebayo" />
-                          <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                          <Avatar.Image src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" />
                         </Avatar.Root>
                       </Button>
                     </Menu.Trigger>
@@ -80,7 +98,7 @@ const Navbar = () => {
                           <Center>
                             <Avatar.Root>
                               <Avatar.Fallback name="Segun Adebayo" />
-                              <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                              <Avatar.Image src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" />
                             </Avatar.Root>
                           </Center>
                           <br />

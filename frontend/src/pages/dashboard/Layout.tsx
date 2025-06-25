@@ -94,7 +94,17 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
     };
   const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Flex ml={{ base: 0, md: 60 }} px={{ base: 4, md: 4 }} height="20" alignItems="center" bg={useColorModeValue("white", "gray.900")} borderBottomWidth="1px" borderBottomColor={useColorModeValue("gray.200", "gray.700")} justifyContent={{ base: "space-between", md: "flex-end" }} {...rest}>
+    <Flex
+      ml={{ base: 0, md: 60 }}
+      px={{ base: 4, md: 4 }}
+      height="20"
+      alignItems="center"
+      bg={useColorModeValue("white", "gray.900")}
+      borderBottomWidth="1px"
+      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      justifyContent={{ base: "space-between", md: "flex-end" }}
+      {...rest}
+    >
       <Button display={{ base: "flex", md: "none" }} onClick={onOpen} variant="outline" aria-label="open menu">
         <FiMenu />
       </Button>
@@ -118,7 +128,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               <HStack>
                 <Avatar.Root>
                   <Avatar.Fallback name="Segun Adebayo" />
-                  <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                  <Avatar.Image src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" />
                 </Avatar.Root>
                 <VStack display={{ base: "none", md: "flex" }} alignItems="flex-start" spaceY="1px" ml="2">
                   <Text fontSize="sm">{userName || "userName"} </Text>
